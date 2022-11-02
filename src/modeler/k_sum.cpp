@@ -39,7 +39,7 @@ int main() {
         if (model.get(GRB_IntAttr_SolCount) == 0)// if the solver could not obtain a solution
             throw GRBException("Could not obtain a solution!", -1);
 
-        std::cout << "Itens used:" << std::endl;
+        std::cout << "Items used:" << std::endl;
         for (int i = 0; i < n; i++)
             if (X[i].get(GRB_DoubleAttr_X) > 0.5)
                 std::cout << i << " - of value " << (int) vals[i] << std::endl;

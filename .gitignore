@@ -129,3 +129,5 @@ dist
 data/
 .wakatime-project
 .vscode
+.DS_Store
+proxies.txt
