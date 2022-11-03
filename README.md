@@ -1,4 +1,5 @@
 # csgofloater
+
 csgofloater is a utility to aid in the crafting of weapon skins with very specific float values.
 
 ## Requirements
@@ -33,6 +34,7 @@ edit the `.env` file with the directories from your Gurobi installation. The def
 inside of the `GUROBI_LIB_DIR` directory, there is a file `libgurobiXX.dylib`. the `GUROBI_DYLIB_FILE` variable should be set to `gurobiXX` where XX is the two numbers at the end of the filename
 
 ## Usage
+
 run the csgofloater interface:
 
 ```
@@ -40,4 +42,5 @@ npm start
 ```
 
 ## License
+
 [MIT](https://choosealicense.com/licenses/mit/)
