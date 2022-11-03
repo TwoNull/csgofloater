@@ -1,54 +1,53 @@
 #include <gurobi_c++.h>
 #include <iostream>
-#include <random>
+#include <fstream>
 
-int n = 20000, k = 10, t = 666;
+int n = 0, k = 10, t = 0;
 
 int main() {
+    std::cin >> t;
+    int value;
+    std::ifstream Counter;
+    Counter.open("../../data/raw.txt");
+    while(Counter >> value)
+        n++;
+    Counter.close();
     auto X = new GRBVar[n];
     auto vals = new int[n];
-    std::mt19937 gen(42);
-    std::uniform_int_distribution<int> dis(0, n);
-    for (int i = 0; i < n; i++) {
-        vals[i] = dis(gen);
-        std::cout << vals[i] << " ";
-    }
+    std::ifstream File;
+    File.open("../../data/raw.txt");
+    for (int i = 0; i < n; i++)
+        File >> vals[i];
+    File.close();
     try {
         GRBEnv env = GRBEnv();
         GRBModel model = GRBModel(env);
         model.set(GRB_StringAttr_ModelName, "k-sum solver");
         model.set(GRB_IntAttr_ModelSense, GRB_MINIMIZE);
-        // if (n > 500) model.set(GRB_IntParam_Threads, 1);
 
-        // Create the binary selection variables:
         for (int i = 0; i < n; i++)
             X[i] = model.addVar(0.0, 1.0, vals[i], GRB_BINARY, "x_" + std::to_string(i));
-        model.update();// run update to use model inserted variables
+        model.update();
 
-        // Should select a k-tuple:
         GRBLinExpr expr = 0;
         for (int i = 0; i < n; i++)
             expr += X[i];
         model.addConstr(expr == k);
 
-        // The selected values should sum to at least the target value:
         expr = 0;
         for (int i = 0; i < n; i++)
             expr += vals[i] * X[i];
         model.addConstr(expr >= t);
 
-        model.update();// run update before optimize
+        model.update();
         model.optimize();
-        if (model.get(GRB_IntAttr_SolCount) == 0)// if the solver could not obtain a solution
+        if (model.get(GRB_IntAttr_SolCount) == 0)
             throw GRBException("Could not obtain a solution!", -1);
 
-        std::cout << "Itens used:" << std::endl;
         for (int i = 0; i < n; i++)
             if (X[i].get(GRB_DoubleAttr_X) > 0.5)
-                std::cout << i << " - of value " << (int) vals[i] << std::endl;
-        std::cout << "Sum of " << model.getObjective().getValue() << std::endl;
+                std::cout << i << " ";
     } catch (const GRBException &ex) {
-        printf("Exception...\n");
         std::cout << ex.getMessage();
         exit(ex.getErrorCode());
     }
