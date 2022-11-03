@@ -2,20 +2,21 @@
 #include <iostream>
 #include <fstream>
 
-int n = 0, k = 10, t = 0;
+int n = 0, k = 10;
+float t = 0;
 
 int main() {
     std::cin >> t;
-    int value;
+    float value;
     std::ifstream Counter;
-    Counter.open("../../data/raw.txt");
+    Counter.open("../../data/raw_float.txt");
     while(Counter >> value)
         n++;
     Counter.close();
     auto X = new GRBVar[n];
-    auto vals = new int[n];
+    auto vals = new float[n];
     std::ifstream File;
-    File.open("../../data/raw.txt");
+    File.open("../../data/raw_float.txt");
     for (int i = 0; i < n; i++)
         File >> vals[i];
     File.close();
