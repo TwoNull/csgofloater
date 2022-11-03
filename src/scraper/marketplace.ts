@@ -4,9 +4,8 @@ import fs from "fs";
 async function scrapeMarket() {}
 
 async function scrapeMarketPage(start: number, hashName: string) {
-  const url = `https://steamcommunity.com/market/listings/730/${encodeURI(
-    hashName
-  )}/render?query=&start=${start}&count=100&currency=${1}&country=US&language=english&filter=`;
+  const encodedHashName = encodeURI(hashName)
+  const url = `https://steamcommunity.com/market/listings/730/${encodedHashName}/render?query=&start=${start}&count=100&currency=${1}&country=US&language=english&filter=`;
   const res = axios.get(url, {});
 }
 

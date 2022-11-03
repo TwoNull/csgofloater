@@ -131,3 +131,4 @@ data/
 .vscode
 .DS_Store
 proxies.txt
+a.*

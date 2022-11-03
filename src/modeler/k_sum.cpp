@@ -1,15 +1,18 @@
 #include <gurobi_c++.h>
 #include <iostream>
+#include <random>
 
-unsigned int n = 1000000, k = 10, t = 666;
+int n = 20000, k = 10, t = 666;
 
 int main() {
     auto X = new GRBVar[n];
-    auto vals = new unsigned char[n];
-    srand(42);
-    for (int i = 0; i < n; i++)
-        vals[i] = rand();
-
+    auto vals = new int[n];
+    std::mt19937 gen(42);
+    std::uniform_int_distribution<int> dis(0, n);
+    for (int i = 0; i < n; i++) {
+        vals[i] = dis(gen);
+        std::cout << vals[i] << " ";
+    }
     try {
         GRBEnv env = GRBEnv();
         GRBModel model = GRBModel(env);
@@ -39,7 +42,7 @@ int main() {
         if (model.get(GRB_IntAttr_SolCount) == 0)// if the solver could not obtain a solution
             throw GRBException("Could not obtain a solution!", -1);
 
-        std::cout << "Items used:" << std::endl;
+        std::cout << "Itens used:" << std::endl;
         for (int i = 0; i < n; i++)
             if (X[i].get(GRB_DoubleAttr_X) > 0.5)
                 std::cout << i << " - of value " << (int) vals[i] << std::endl;

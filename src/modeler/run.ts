@@ -19,7 +19,7 @@ async function compileRunKSum() {
       child.stdin.write("4 5");
       child.stdin.end();
       child.stdout.on("data", (data) => {
-        console.log(`child stdout:\n${data}`);
+        child.kill('SIGINT');
       });
     }
   );
