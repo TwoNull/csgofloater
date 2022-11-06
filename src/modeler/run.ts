@@ -30,8 +30,9 @@ async function compileRunKSum(sumTarget: number) {
   });
 }
 
-async function run() {
-  const res = String(await compileRunKSum(666666))
+async function run(desiredFloat: number) {
+  const summation = desiredFloat * 10
+  const res = String(await compileRunKSum(summation))
   if(res === 'Could not obtain a solution!') {
     throw new Error('Error on Build')
   }
@@ -42,7 +43,5 @@ async function run() {
   if(indexes.length != 10) {
     throw new Error('Unknown Error Parsing Output')
   }
-  console.log(res)
+  return indexes
 }
-
-run()
