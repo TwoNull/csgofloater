@@ -85,39 +85,10 @@ export async function skinPrompt(quality: any) {
   let skin: any;
   choicesArr = [];
   for (skin in quality) {
-    if (quality[skin].quality == 1) {
-      choicesArr.push({ message: quality[skin].name, value: quality[skin] });
-    }
-    if (quality[skin].quality == 2) {
-      choicesArr.push({
-        message: chalk.gray(quality[skin].name),
-        value: quality[skin],
-      });
-    }
-    if (quality[skin].quality == 4) {
-      choicesArr.push({
-        message: chalk.cyan(quality[skin].name),
-        value: quality[skin],
-      });
-    }
-    if (quality[skin].quality == 6) {
-      choicesArr.push({
-        message: chalk.blue(quality[skin].name),
-        value: quality[skin],
-      });
-    }
-    if (quality[skin].quality == 8) {
-      choicesArr.push({
-        message: chalk.magenta(quality[skin].name),
-        value: quality[skin],
-      });
-    }
-    if (quality[skin].quality == 10) {
-      choicesArr.push({
-        message: chalk.red(quality[skin].name),
-        value: quality[skin],
-      });
-    }
+    choicesArr.push({
+      message: colorize(quality[skin].name, quality[skin].quality),
+      value: quality[skin],
+    });
   }
   choicesArr.push({ message: "<-- back", value: 11 });
   logo();
@@ -134,7 +105,9 @@ export async function floatPrompt(skin: any) {
   logo();
   const query = new Input({
     message:
-      "Enter your desired float for your " + chalk.cyan(skin.name) + ":\n",
+      "Enter your desired float for your " +
+      colorize(skin.name, skin.quality) +
+      ":\n",
     initial: "0.0133742069",
     validate: function (answer: string) {
       const floatAnswer = parseFloat(answer);
@@ -170,4 +143,25 @@ export function logo() {
       emoji.get("purple_heart") +
       "\n"
   );
+}
+
+function colorize(string: any, quality: number) {
+  if (quality == 1) {
+    return string;
+  }
+  if (quality == 2) {
+    return chalk.gray(string);
+  }
+  if (quality == 4) {
+    return chalk.cyan(string);
+  }
+  if (quality == 6) {
+    return chalk.blue(string);
+  }
+  if (quality == 8) {
+    return chalk.magenta(string);
+  }
+  if (quality == 10) {
+    return chalk.red(string);
+  }
 }
