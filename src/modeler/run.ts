@@ -7,7 +7,7 @@ dotenv.config();
 
 async function compileRunKSum(sumTarget: number) {
   if (!fs.existsSync("./src/modeler/a.out")) {
-    const { stdout, stderr } = await execute(
+    const { stderr } = await execute(
       `g++ k_sum.cpp -L${process.env.GUROBI_LIB_DIR} -lgurobi_c++ -l${process.env.GUROBI_DYLIB_FILE} -I${process.env.GUROBI_INCLUDE_DIR} -std=c++11`,
       {
         cwd: `${process.cwd()}/src/modeler`,
@@ -25,7 +25,7 @@ async function compileRunKSum(sumTarget: number) {
     child.stdout.on("data", (data) => {
       res = data.toString();
     });
-    child.on("close", (code) => {
+    child.on("close", () => {
       resolve(res);
     });
     child.stdin.write(String(sumTarget));

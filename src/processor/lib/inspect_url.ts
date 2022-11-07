@@ -1,7 +1,13 @@
-const utils = require('./utils');
+// @ts-nocheck
+import {isOnlyDigits} from './utils';
 
-class InspectURL {
-    constructor() {
+export default class InspectURL {
+    requiredParams: string[];
+    s: string | undefined;
+    m: string;
+    a: string | undefined;
+    d: string | undefined;
+    constructor(link: string) {
         this.requiredParams = ['s', 'a', 'd', 'm'];
 
         if (arguments.length === 1 && typeof arguments[0] === 'string') {
@@ -34,13 +40,13 @@ class InspectURL {
     get valid() {
         // Ensure each param exists and only contains digits
         for (let param of this.requiredParams) {
-            if (!this[param] || !utils.isOnlyDigits(this[param])) return false;
+            if (!this[param] || !isOnlyDigits(this[param])) return false;
         }
 
         return true;
     }
 
-    parseLink(link) {
+    parseLink(link: string) {
         try {
             link = decodeURI(link);
         } catch (e) {
@@ -56,7 +62,7 @@ class InspectURL {
                 this.m = '0';
             }
             else if (groups[1] === 'M') {
-                this.m = groups[2];
+                this.m = groups[2]!;
                 this.s = '0';
             }
 
@@ -67,6 +73,7 @@ class InspectURL {
 
     getParams() {
         if (this.valid) return {s: this.s, a: this.a, d: this.d, m: this.m};
+        return;
     }
 
     isMarketLink() {
@@ -84,5 +91,3 @@ class InspectURL {
         }
     }
 }
-
-module.exports = InspectURL;

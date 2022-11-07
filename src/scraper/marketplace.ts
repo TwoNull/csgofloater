@@ -1,6 +1,5 @@
 import { randomDesktop } from "./useragents";
 import axios from "axios";
-import fs from "fs";
 import { HttpsProxyAgent } from 'hpagent';
 import cliProgress from 'cli-progress';
 import chalk from "chalk";
@@ -50,7 +49,7 @@ export async function scrapeMarketItems(
   }
   progressBar.increment(1)
   progressBar.stop()
-  writeJsonFile(`./data/${unhashedName}.json`, total);
+  return total
 }
 
 async function scrapeMarketItem(hashName: string) {
@@ -90,7 +89,7 @@ export async function scrapeMarketPage(start: number, hashName: string): Promise
       subtotal: res.data.listinginfo[listing].converted_price,
       fee: res.data.listinginfo[listing].converted_fee,
       total: res.data.listinginfo[listing].converted_price + res.data.listinginfo[listing].converted_fee,
-      inspect: res.data.listinginfo[listing].asset.market_actions[0].link,
+      inspect: `steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20M${res.data.listinginfo[listing].listingid}A${res.data.listinginfo[listing].asset.id}D${res.data.listinginfo[listing].asset.market_actions[0].link.substring(89)}`,
     });
     }
     return [results, res.data.total_count];
@@ -99,10 +98,6 @@ export async function scrapeMarketPage(start: number, hashName: string): Promise
     await timeout(3000)
     return scrapeMarketPage(start, hashName)
   }
-}
-
-function writeJsonFile(path: string, data: any) {
-  return fs.writeFileSync(path, JSON.stringify(data, null, 4), "utf-8");
 }
 
 function timeout(ms: number) {

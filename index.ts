@@ -5,14 +5,11 @@ import {
   qualityPrompt,
   skinPrompt,
 } from "./src/interface/interface";
-/*import {
-    scrapeMarketItems
-} from "./src/scraper/marketplace"*/
 import {
-    addJob,
-    loginBots
-} from "./src/processor/processor"
+    scrapeMarketItems
+} from "./src/scraper/marketplace"
 import fs from "fs";
+import { processFloats } from "./src/processor/processor";
 
 async function main() {
   if (!fs.existsSync("./data")) {
@@ -25,14 +22,9 @@ async function main() {
   const afv =
     (desiredFloat - answer[0].minwear) /
     (answer[0].maxwear - answer[0].minwear);
-afv
-  //const filenames = await beginScrape(answer[0], answer[1])
-  //await beginProcessing(filenames)
-  const res = {}
-  loginBots()
-  addJob(['steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20S76561198084749846A698323590D7935523998312483177', 'steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20M625254122282020305A6760346663D30614827701953021'], res)
-  await timeout(20000)
-  console.log(res)
+  console.log('Input Average:' + afv)
+  const data = await beginScrape(answer[0], answer[1])
+  await beginProcessing(data)
 }
 
 async function collectionSelection(itemsJson: any): Promise<any> {
@@ -60,25 +52,25 @@ async function skinSelection(
   return [skin, collection];
 }
 
-/*async function beginScrape(skin: any, collection: any) {
+async function beginScrape(skin: any, collection: any) {
   let tradeQuality: number;
   if (skin.quality == 2) {
     tradeQuality = 1;
   } else {
     tradeQuality = skin.quality - 2;
   }
-  let filenames: any
-  filenames = []
+  let data: any
+  data = []
   for(const item in collection.skins[tradeQuality]) {
-    filenames.push(await scrapeMarketItems(collection.skins[tradeQuality][item].name, collection.skins[tradeQuality][item].minwear, collection.skins[tradeQuality][item].maxwear))
+    data.push([collection.skins[tradeQuality][item].name, await scrapeMarketItems(collection.skins[tradeQuality][item].name, collection.skins[tradeQuality][item].minwear, collection.skins[tradeQuality][item].maxwear)])
   }
   console.log('\nAll skins scraped! Now gathering float values...')
-  return filenames
-}*/
+  return data
+}
 
-/*async function beginProcessing(filenames: any) {
-    return null
-}*/
+async function beginProcessing(filenames: any) {
+    return await processFloats(filenames)
+}
 
 function readJsonFile(path: string) {
   return JSON.parse(fs.readFileSync(path, "utf-8"));
@@ -90,9 +82,4 @@ function getIEEE754(x: number) {
   float[0] = x;
   return float[0];
 }
-
-function timeout(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 main();

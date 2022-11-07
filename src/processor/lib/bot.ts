@@ -4,12 +4,12 @@ const winston = require('winston'),
     SteamTotp = require('steam-totp'),
     EventEmitter = require('events').EventEmitter;
 
-class Bot extends EventEmitter {
+export default class Bot extends EventEmitter {
     /**
      * Sets the ready status and sends a 'ready' or 'unready' event if it has changed
      * @param {*|boolean} val New ready status
      */
-    set ready(val) {
+    set ready(val: any | boolean) {
         const prev = this.ready;
         this.ready_ = val;
 
@@ -22,11 +22,11 @@ class Bot extends EventEmitter {
      * Returns the current ready status
      * @return {*|boolean} Ready status
      */
-    get ready() {
+    get ready(): any | boolean {
         return this.ready_ || false;
     }
 
-    constructor(settings) {
+    constructor(settings: any) {
         super();
 
         this.settings = settings;
@@ -43,7 +43,7 @@ class Bot extends EventEmitter {
         this.bindEventHandlers();
 
         // Variance to apply so that each bot relogins at different times
-        const variance = parseInt(Math.random() * 4 * 60 * 1000);
+        const variance = Math.floor(Math.random() * 4 * 60 * 1000);
 
         // As of 7/10/2020, GC inspect calls can timeout repeatedly for whatever reason
         setInterval(() => {
@@ -54,7 +54,7 @@ class Bot extends EventEmitter {
         }, 30 * 60 * 1000 + variance);
     }
 
-    logIn(username, password, auth) {
+    logIn(username: any, password: any, auth: any) {
         this.ready = false;
 
         // Save these parameters if we login later
@@ -90,7 +90,7 @@ class Bot extends EventEmitter {
     }
 
     bindEventHandlers() {
-        this.steamClient.on('error', (err) => {
+        this.steamClient.on('error', (err: { eresult: string | number; }) => {
             winston.error(`Error logging in ${this.username}:`, err);
 
             let login_error_msgs = {
@@ -100,17 +100,13 @@ class Bot extends EventEmitter {
                 65: 'Account login denied due to auth code being invalid',
                 66: 'Account login denied due to 2nd factor auth failure and no mail has been sent'
             };
-
-            if (err.eresult && login_error_msgs[err.eresult] !== undefined) {
-                winston.error(this.username + ': ' + login_error_msgs[err.eresult]);
-            }
         });
 
-        this.steamClient.on('disconnected', (eresult, msg) => {
+        this.steamClient.on('disconnected', (eresult: any, msg: any) => {
             winston.warn(`${this.username} Logged off, reconnecting! (${eresult}, ${msg})`);
         });
 
-        this.steamClient.on('loggedOn', (details, parental) => {
+        this.steamClient.on('loggedOn', () => {
             winston.info(`${this.username} Log on OK`);
 
             // Fixes reconnecting to CS:GO GC since node-steam-user still assumes we're playing 730
@@ -131,7 +127,7 @@ class Bot extends EventEmitter {
                     winston.info(`${this.username} doesn't own CS:GO, retrieving free license`);
 
                     // Request a license for CS:GO
-                    this.steamClient.requestFreeLicense([730], (err, grantedPackages, grantedAppIDs) => {
+                    this.steamClient.requestFreeLicense([730], (err: any, grantedPackages: any, grantedAppIDs: any) => {
                         winston.debug(`${this.username} Granted Packages`, grantedPackages);
                         winston.debug(`${this.username} Granted App IDs`, grantedAppIDs);
 
@@ -149,7 +145,7 @@ class Bot extends EventEmitter {
             });
         });
 
-        this.csgoClient.on('inspectItemInfo', (itemData) => {
+        this.csgoClient.on('inspectItemInfo', (itemData: { iteminfo: any; delay?: any; }) => {
             if (this.resolve && this.currentRequest) {
                 itemData = {iteminfo: itemData};
 
@@ -206,23 +202,23 @@ class Bot extends EventEmitter {
             this.ready = true;
         });
 
-        this.csgoClient.on('disconnectedFromGC', (reason) => {
+        this.csgoClient.on('disconnectedFromGC', (reason: any) => {
             winston.warn(`${this.username} CSGO unready (${reason}), trying to reconnect!`);
             this.ready = false;
 
             // node-globaloffensive will automatically try to reconnect
         });
 
-        this.csgoClient.on('connectionStatus', (status) => {
+        this.csgoClient.on('connectionStatus', (status: any) => {
             winston.debug(`${this.username} GC Connection Status Update ${status}`);
         });
 
-        this.csgoClient.on('debug', (msg) => {
+        this.csgoClient.on('debug', (msg: any) => {
             winston.debug(msg);
         });
     }
 
-    sendFloatRequest(link) {
+    sendFloatRequest(link: { getParams: () => any; }) {
         return new Promise((resolve, reject) => {
             this.resolve = resolve;
             this.busy = true;
@@ -250,5 +246,3 @@ class Bot extends EventEmitter {
         });
     }
 }
-
-module.exports = Bot;
