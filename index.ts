@@ -5,6 +5,9 @@ import {
   qualityPrompt,
   skinPrompt,
 } from "./src/interface/interface";
+import {
+    scrapeMarketItems
+} from "./src/scraper/marketplace"
 import fs from "fs";
 
 async function main() {
@@ -18,6 +21,8 @@ async function main() {
   const afv =
     (desiredFloat - answer[0].minwear) /
     (answer[0].maxwear - answer[0].minwear);
+  const filenames = await beginScrape(answer[0], answer[1])
+  await beginProcessing(filenames)
 }
 
 async function collectionSelection(itemsJson: any): Promise<any> {
@@ -43,6 +48,26 @@ async function skinSelection(
     return await qualitySelection(collection, itemsJson);
   }
   return [skin, collection];
+}
+
+async function beginScrape(skin: any, collection: any) {
+  let tradeQuality: number;
+  if (skin.quality == 2) {
+    tradeQuality = 1;
+  } else {
+    tradeQuality = skin.quality - 2;
+  }
+  let filenames: any
+  filenames = []
+  for(const item in collection.skins[tradeQuality]) {
+    filenames.push(await scrapeMarketItems(collection.skins[tradeQuality][item].name, collection.skins[tradeQuality][item].minwear, collection.skins[tradeQuality][item].maxwear))
+  }
+  console.log('\nAll skins scraped! Now gathering float values...')
+  return filenames
+}
+
+async function beginProcessing(filenames: any) {
+    return null
 }
 
 function readJsonFile(path: string) {

@@ -1,39 +1,55 @@
 import { randomDesktop } from "./useragents";
 import axios from "axios";
 import fs from "fs";
+import { HttpsProxyAgent } from 'hpagent';
+import cliProgress from 'cli-progress';
+import chalk from "chalk";
+const progressBar = new cliProgress.SingleBar({
+    format: '{filename} | ' + chalk.cyan('{bar}') + '| {percentage}% || {value}/{total} Skins Scraped',
+    barCompleteChar: '\u2588',
+    barIncompleteChar: '\u2591',
+    hideCursor: true
+});
 
-async function scrapeMarketItems(
+export async function scrapeMarketItems(
   unhashedName: string,
   minFloat: number,
-  maxFloat: number
+  maxFloat: number,
 ) {
-  let total = [];
+  progressBar.start(1, 0, {
+    speed: "N/A"
+  });
+  progressBar.update({filename: unhashedName})
+  let total: any
+  total = [];
   if (minFloat < 0.07) {
     const scrapedItem = await scrapeMarketItem(unhashedName + " (Factory New)");
-    total.concat(scrapedItem);
+    total = total.concat(scrapedItem);
   }
   if (minFloat < 0.15 && maxFloat >= 0.07) {
     const scrapedItem = await scrapeMarketItem(
       unhashedName + " (Minimal Wear)"
     );
-    total.concat(scrapedItem);
+    total = total.concat(scrapedItem);
   }
   if (minFloat < 0.38 && maxFloat >= 0.15) {
     const scrapedItem = await scrapeMarketItem(
       unhashedName + " (Field-Tested)"
     );
-    total.concat(scrapedItem);
+    total = total.concat(scrapedItem);
   }
   if (minFloat < 0.45 && maxFloat >= 0.38) {
     const scrapedItem = await scrapeMarketItem(unhashedName + " (Well-Worn)");
-    total.concat(scrapedItem);
+    total = total.concat(scrapedItem);
   }
   if (maxFloat >= 0.45) {
     const scrapedItem = await scrapeMarketItem(
       unhashedName + " (Battle-Scarred)"
     );
-    total.concat(scrapedItem);
+    total = total.concat(scrapedItem);
   }
+  progressBar.increment(1)
+  progressBar.stop()
   writeJsonFile(`./data/${unhashedName}.json`, total);
 }
 
@@ -50,33 +66,45 @@ async function scrapeMarketItem(hashName: string) {
   return firstReq[0];
 }
 
-async function scrapeMarketPage(start: number, hashName: string) {
-  const encodedHashName = encodeURI(hashName);
-  const url = `https://steamcommunity.com/market/listings/730/${encodedHashName}/render?query=&start=${start}&count=100&currency=${1}&country=US&language=english&filter=`;
-  const referer = `https://steamcommunity.com/market/listings/730/${encodedHashName}`;
-  const res = await axios.get(url, {
+export async function scrapeMarketPage(start: number, hashName: string) {
+  try{
+    const encodedHashName = encodeURI(hashName);
+    const url = `https://steamcommunity.com/market/listings/730/${encodedHashName}/render?query=&start=${start}&count=100&currency=${1}&country=US&language=english&filter=`;
+    const referer = `https://steamcommunity.com/market/listings/730/${encodedHashName}`;
+    const res = await axios.get(url, {
     headers: {
       Host: "steamcommunity.com",
       Origin: "https://steamcommunity.com/",
       Referer: referer,
       "User-Agent": randomDesktop(),
-      Accept: "application/json",
+      Accept: "*/*",
+      Connection: 'keep-alive',
     },
-  });
-  let results: any[] = [];
-  let listing: any;
-  for (listing in res.data.listinginfo) {
-    results.push({
-      listingid: listing.listingid,
-      subtotal: listing.converted_price,
-      fee: listing.converted_fee,
-      total: listing.converted_price + listing.converted_fee,
-      inspect: listing.asset.market_actions[0].link,
+    httpsAgent: new HttpsProxyAgent( {proxy: `http://mr10803lbO3:MHcryKGXAR_region-northamerica@ultra.marsproxies.com:44443`}),
     });
+    let results: any[] = [];
+    let listing: any;
+    for (listing in res.data.listinginfo) {
+    results.push({
+      listingid: res.data.listinginfo[listing].listingid,
+      subtotal: res.data.listinginfo[listing].converted_price,
+      fee: res.data.listinginfo[listing].converted_fee,
+      total: res.data.listinginfo[listing].converted_price + res.data.listinginfo[listing].converted_fee,
+      inspect: res.data.listinginfo[listing].asset.market_actions[0].link,
+    });
+    }
+    return [results, res.data.total_count];
+    }
+  catch (err) {
+    await timeout(3000)
+    return scrapeMarketPage(start, hashName)
   }
-  return [results, res.data.total_count];
 }
 
 function writeJsonFile(path: string, data: any) {
   return fs.writeFileSync(path, JSON.stringify(data, null, 4), "utf-8");
+}
+
+function timeout(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }

@@ -16,7 +16,7 @@ export async function collectionPrompt(collections: any) {
   logo();
   const query = new Select({
     message:
-      chalk.bold("First, choose a CS:GO skin collection:\n  ") +
+      chalk.bold("First, Choose a CS:GO Skin Collection:\n  ") +
       chalk.gray("(Scroll Up or Down for More Options)\n"),
     choices: choicesArr,
     limit: 25,
@@ -68,10 +68,11 @@ export async function qualityPrompt(collection: any) {
     }
   }
   choicesArr.push({ message: "<-- back", value: 11 });
+  choicesArr.shift()
   logo();
   const query = new Select({
     message: chalk.bold(
-      "Choose a weapon quality from " + chalk.cyan(collection.name) + ":\n  "
+      "Choose a Weapon Quality from " + chalk.cyan(collection.name) + " to Trade Up to:\n  "
     ),
     choices: choicesArr,
     limit: 25,
