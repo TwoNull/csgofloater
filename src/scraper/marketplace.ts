@@ -66,7 +66,7 @@ async function scrapeMarketItem(hashName: string) {
   return firstReq[0];
 }
 
-export async function scrapeMarketPage(start: number, hashName: string) {
+export async function scrapeMarketPage(start: number, hashName: string): Promise<any> {
   try{
     const encodedHashName = encodeURI(hashName);
     const url = `https://steamcommunity.com/market/listings/730/${encodedHashName}/render?query=&start=${start}&count=100&currency=${1}&country=US&language=english&filter=`;
