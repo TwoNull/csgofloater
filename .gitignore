@@ -133,3 +133,4 @@ data/
 proxies.txt
 a.*
 config.js
+config.ts
