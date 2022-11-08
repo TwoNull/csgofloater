@@ -99,7 +99,7 @@ export default class Bot extends EventEmitter {
     this.steamClient.on("disconnected", (eresult: any, msg: any) => {});
 
     this.steamClient.on("loggedOn", () => {
-      console.log(chalk.green(`${this.username} Logged in Successfully!`));
+      console.log(chalk.bold(`${this.username}`) +` Logged in Successfully!`);
 
       // Fixes reconnecting to CS:GO GC since node-steam-user still assumes we're playing 730
       // and never sends the appLaunched event to node-globaloffensive
@@ -197,7 +197,7 @@ export default class Bot extends EventEmitter {
     );
 
     this.csgoClient.on("connectedToGC", () => {
-      console.log(chalk.green(`${this.username} CSGO Client Ready!`));
+      console.log(chalk.bold(`${this.username}`) + ` CSGO Client Ready!`);
 
       this.ready = true;
     });

@@ -13,7 +13,6 @@
   "devDependencies": {
     "@types/cli-progress": "^3.11.0",
     "@types/node-emoji": "^1.8.2",
-    "@types/progress": "^2.0.5",
     "typescript": "^4.8.4"
   },
   "dependencies": {
@@ -28,7 +27,6 @@
     "node-emoji": "^1.11.0",
     "prettier": "^2.7.1",
     "steam-user": "^4.25.0",
-    "ts-node": "^10.9.1",
-    "winston": "^3.8.2"
+    "ts-node": "^10.9.1"
   }
 }

@@ -15,31 +15,35 @@ export async function processFloats(data: any) {
     bots[i] = new Bot(CONFIG.bot_settings);
     bots[i].logIn(loginData.user, loginData.pass, loginData.auth);
   }
+  let answer: any
+  answer = []
   for (let i = 0; i < data.length; i++) {
     let arrayOfItems: any;
     arrayOfItems = [];
     for (let j = 0; j < data[i][1].length; j++) {
-      arrayOfItems.push(inspectItem(bots, data[i][1][j]));
+      arrayOfItems.push(inspectItem(bots, data[i][1][j], data[i][0], data[i][2]));
     }
     const completed = await Promise.all(arrayOfItems);
-    writeJsonFile(`./data/${data[i][0]}.json`, completed);
+    answer = answer.concat(completed)
     console.log(
-      `completed parsing floats for ${colorize(data[i][0], data[i][2])}`
+      `completed parsing ${data[i][1].length} floats for ${colorize(data[i][0], data[i][2])}`
     );
   }
-  return;
+  return answer;
 }
 
-async function inspectItem(bots: any, item: any): Promise<any> {
+async function inspectItem(bots: any, item: any, itemName: any, quality: any): Promise<any> {
   try {
     let bot = await getBot(bots);
     const link = new InspectURL(item.inspect);
     const res = await bot.sendFloatRequest(link);
     const newItem = { ...item };
     newItem.float = res.iteminfo.floatvalue;
+    newItem.name = itemName
+    newItem.quality = quality
     return newItem;
   } catch {
-    return inspectItem(bots, item);
+    return inspectItem(bots, item, itemName, quality);
   }
 }
 

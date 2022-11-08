@@ -9,14 +9,14 @@ int main() {
     std::cin >> t;
     float value;
     std::ifstream Counter;
-    Counter.open("../../data/raw_float.txt");
+    Counter.open("../../data/floats.txt");
     while(Counter >> value)
         n++;
     Counter.close();
     auto X = new GRBVar[n];
     auto vals = new float[n];
     std::ifstream File;
-    File.open("../../data/raw_float.txt");
+    File.open("../../data/floats.txt");
     for (int i = 0; i < n; i++)
         File >> vals[i];
     File.close();

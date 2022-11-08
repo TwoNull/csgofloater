@@ -1,29 +1,12 @@
 import { randomDesktop } from "./useragents";
-import { colorize } from "../interface/interface";
 import axios from "axios";
 import { HttpsProxyAgent } from "hpagent";
-import cliProgress from "cli-progress";
-import chalk from "chalk";
-const progressBar = new cliProgress.SingleBar({
-  format:
-    "{filename} | " +
-    chalk.green("{bar}") +
-    "| {percentage}% || {value}/{total} Skins Scraped",
-  barCompleteChar: "\u2588",
-  barIncompleteChar: "\u2591",
-  hideCursor: true,
-});
 
 export async function scrapeMarketItems(
   unhashedName: string,
   minFloat: number,
   maxFloat: number,
-  quality: number
 ) {
-  progressBar.start(1, 0, {
-    speed: "N/A",
-  });
-  progressBar.update({ filename: colorize(unhashedName, quality) });
   let total: any;
   total = [];
   if (minFloat < 0.07) {
@@ -52,8 +35,6 @@ export async function scrapeMarketItems(
     );
     total = total.concat(scrapedItem);
   }
-  progressBar.increment(1);
-  progressBar.stop();
   return total;
 }
 
@@ -110,7 +91,7 @@ export async function scrapeMarketPage(
     }
     return [results, res.data.total_count];
   } catch (err) {
-    await timeout(3000);
+    await timeout(1000);
     return scrapeMarketPage(start, hashName);
   }
 }

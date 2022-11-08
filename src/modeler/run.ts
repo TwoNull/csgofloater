@@ -33,10 +33,10 @@ async function compileRunKSum(sumTarget: number) {
   });
 }
 
-async function run(desiredFloat: number) {
-  const summation = desiredFloat * 10;
+export async function runModeler(avgFloat: number) {
+  const summation = avgFloat * 10;
   const res = String(await compileRunKSum(summation));
-  if (res === "Could not obtain a solution!") {
+  if (res === "Error on Build") {
     throw new Error("Error on Build");
   }
   if (res === "Could not obtain a solution!") {

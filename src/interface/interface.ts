@@ -133,7 +133,7 @@ export async function floatPrompt(skin: any) {
 export function logo() {
   console.clear();
   console.log(
-    chalk.magenta(
+    chalk.gray(
       "███████╗██╗░░░░░░█████╗░░█████╗░████████╗███████╗██████╗░\n" +
         "██╔════╝██║░░░░░██╔══██╗██╔══██╗╚══██╔══╝██╔════╝██╔══██╗\n" +
         "█████╗░░██║░░░░░██║░░██║███████║░░░██║░░░█████╗░░██████╔╝\n" +
@@ -143,7 +143,7 @@ export function logo() {
     ) +
       chalk.bold("Copyright © 2022 0xDarkTwo") +
       " " +
-      emoji.get("purple_heart") +
+      emoji.get("writing_hand") +
       "\n"
   );
 }
