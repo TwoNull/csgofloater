@@ -1,25 +1,30 @@
 import { randomDesktop } from "./useragents";
+import { colorize } from "../interface/interface";
 import axios from "axios";
-import { HttpsProxyAgent } from 'hpagent';
-import cliProgress from 'cli-progress';
+import { HttpsProxyAgent } from "hpagent";
+import cliProgress from "cli-progress";
 import chalk from "chalk";
 const progressBar = new cliProgress.SingleBar({
-    format: '{filename} | ' + chalk.cyan('{bar}') + '| {percentage}% || {value}/{total} Skins Scraped',
-    barCompleteChar: '\u2588',
-    barIncompleteChar: '\u2591',
-    hideCursor: true
+  format:
+    "{filename} | " +
+    chalk.green("{bar}") +
+    "| {percentage}% || {value}/{total} Skins Scraped",
+  barCompleteChar: "\u2588",
+  barIncompleteChar: "\u2591",
+  hideCursor: true,
 });
 
 export async function scrapeMarketItems(
   unhashedName: string,
   minFloat: number,
   maxFloat: number,
+  quality: number
 ) {
   progressBar.start(1, 0, {
-    speed: "N/A"
+    speed: "N/A",
   });
-  progressBar.update({filename: unhashedName})
-  let total: any
+  progressBar.update({ filename: colorize(unhashedName, quality) });
+  let total: any;
   total = [];
   if (minFloat < 0.07) {
     const scrapedItem = await scrapeMarketItem(unhashedName + " (Factory New)");
@@ -47,9 +52,9 @@ export async function scrapeMarketItems(
     );
     total = total.concat(scrapedItem);
   }
-  progressBar.increment(1)
-  progressBar.stop()
-  return total
+  progressBar.increment(1);
+  progressBar.stop();
+  return total;
 }
 
 async function scrapeMarketItem(hashName: string) {
@@ -65,41 +70,51 @@ async function scrapeMarketItem(hashName: string) {
   return firstReq[0];
 }
 
-export async function scrapeMarketPage(start: number, hashName: string): Promise<any> {
-  try{
+export async function scrapeMarketPage(
+  start: number,
+  hashName: string
+): Promise<any> {
+  try {
     const encodedHashName = encodeURI(hashName);
     const url = `https://steamcommunity.com/market/listings/730/${encodedHashName}/render?query=&start=${start}&count=100&currency=${1}&country=US&language=english&filter=`;
     const referer = `https://steamcommunity.com/market/listings/730/${encodedHashName}`;
     const res = await axios.get(url, {
-    headers: {
-      Host: "steamcommunity.com",
-      Origin: "https://steamcommunity.com/",
-      Referer: referer,
-      "User-Agent": randomDesktop(),
-      Accept: "*/*",
-      Connection: 'keep-alive',
-    },
-    httpsAgent: new HttpsProxyAgent( {proxy: `http://mr10803lbO3:MHcryKGXAR_region-northamerica@ultra.marsproxies.com:44443`}),
+      headers: {
+        Host: "steamcommunity.com",
+        Origin: "https://steamcommunity.com/",
+        Referer: referer,
+        "User-Agent": randomDesktop(),
+        Accept: "*/*",
+        Connection: "keep-alive",
+      },
+      httpsAgent: new HttpsProxyAgent({
+        proxy: `http://mr10803lbO3:MHcryKGXAR_region-northamerica@ultra.marsproxies.com:44443`,
+      }),
     });
     let results: any[] = [];
     let listing: any;
     for (listing in res.data.listinginfo) {
-    results.push({
-      listingid: res.data.listinginfo[listing].listingid,
-      subtotal: res.data.listinginfo[listing].converted_price,
-      fee: res.data.listinginfo[listing].converted_fee,
-      total: res.data.listinginfo[listing].converted_price + res.data.listinginfo[listing].converted_fee,
-      inspect: `steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20M${res.data.listinginfo[listing].listingid}A${res.data.listinginfo[listing].asset.id}D${res.data.listinginfo[listing].asset.market_actions[0].link.substring(89)}`,
-    });
+      results.push({
+        listingid: res.data.listinginfo[listing].listingid,
+        subtotal: res.data.listinginfo[listing].converted_price,
+        fee: res.data.listinginfo[listing].converted_fee,
+        total:
+          res.data.listinginfo[listing].converted_price +
+          res.data.listinginfo[listing].converted_fee,
+        inspect: `steam://rungame/730/76561202255233023/+csgo_econ_action_preview%20M${
+          res.data.listinginfo[listing].listingid
+        }A${res.data.listinginfo[listing].asset.id}D${res.data.listinginfo[
+          listing
+        ].asset.market_actions[0].link.substring(89)}`,
+      });
     }
     return [results, res.data.total_count];
-    }
-  catch (err) {
-    await timeout(3000)
-    return scrapeMarketPage(start, hashName)
+  } catch (err) {
+    await timeout(3000);
+    return scrapeMarketPage(start, hashName);
   }
 }
 
 function timeout(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }

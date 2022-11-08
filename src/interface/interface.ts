@@ -68,11 +68,13 @@ export async function qualityPrompt(collection: any) {
     }
   }
   choicesArr.push({ message: "<-- back", value: 11 });
-  choicesArr.shift()
+  choicesArr.shift();
   logo();
   const query = new Select({
     message: chalk.bold(
-      "Choose a Weapon Quality from " + chalk.cyan(collection.name) + " to Trade Up to:\n  "
+      "Choose a Weapon Quality from " +
+        chalk.cyan(collection.name) +
+        " to Trade Up to:\n  "
     ),
     choices: choicesArr,
     limit: 25,
@@ -146,7 +148,7 @@ export function logo() {
   );
 }
 
-function colorize(string: any, quality: number) {
+export function colorize(string: any, quality: number) {
   if (quality == 1) {
     return string;
   }

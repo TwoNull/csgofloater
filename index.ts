@@ -5,10 +5,9 @@ import {
   qualityPrompt,
   skinPrompt,
 } from "./src/interface/interface";
-import {
-    scrapeMarketItems
-} from "./src/scraper/marketplace"
+import { scrapeMarketItems } from "./src/scraper/marketplace";
 import fs from "fs";
+import chalk from "chalk";
 import { processFloats } from "./src/processor/processor";
 
 async function main() {
@@ -22,9 +21,11 @@ async function main() {
   const afv =
     (desiredFloat - answer[0].minwear) /
     (answer[0].maxwear - answer[0].minwear);
-  console.log('Input Average:' + afv)
-  const data = await beginScrape(answer[0], answer[1])
-  await beginProcessing(data)
+  console.log();
+  console.log("Average Float of Inputs: " + chalk.green(afv));
+  console.log("\n");
+  const data = await beginScrape(answer[0], answer[1]);
+  await beginProcessing(data);
 }
 
 async function collectionSelection(itemsJson: any): Promise<any> {
@@ -59,17 +60,26 @@ async function beginScrape(skin: any, collection: any) {
   } else {
     tradeQuality = skin.quality - 2;
   }
-  let data: any
-  data = []
-  for(const item in collection.skins[tradeQuality]) {
-    data.push([collection.skins[tradeQuality][item].name, await scrapeMarketItems(collection.skins[tradeQuality][item].name, collection.skins[tradeQuality][item].minwear, collection.skins[tradeQuality][item].maxwear)])
+  let data: any;
+  data = [];
+  for (const item in collection.skins[tradeQuality]) {
+    data.push([
+      collection.skins[tradeQuality][item].name,
+      await scrapeMarketItems(
+        collection.skins[tradeQuality][item].name,
+        collection.skins[tradeQuality][item].minwear,
+        collection.skins[tradeQuality][item].maxwear,
+        tradeQuality
+      ),
+      tradeQuality,
+    ]);
   }
-  console.log('\nAll skins scraped! Now gathering float values...')
-  return data
+  console.log("\nAll skins scraped! Now gathering float values...");
+  return data;
 }
 
 async function beginProcessing(filenames: any) {
-    return await processFloats(filenames)
+  return await processFloats(filenames);
 }
 
 function readJsonFile(path: string) {
