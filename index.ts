@@ -1,10 +1,11 @@
 import {
   collectionPrompt,
-  floatPrompt,
+  continuePrompt,
   qualityPrompt,
   skinPrompt,
   colorize,
-  logo
+  logo,
+  floatPrompt
 } from "./src/interface/interface";
 import { scrapeMarketItems } from "./src/scraper/marketplace";
 import { processFloats } from "./src/processor/processor";
@@ -12,6 +13,7 @@ import fs from "fs";
 import chalk from "chalk";
 import cliProgress from "cli-progress";
 import { runModeler } from "./src/modeler/run";
+import { automate } from "./src/automator/automate";
 
 async function main() {
   if (!fs.existsSync("./data")) {
@@ -35,11 +37,17 @@ async function main() {
   console.log('Input Skins:')
   let total = 0;
   for(let i = 0; i < results.length; i++) {
-    console.log(colorize(data[parseInt(results[i])].name, data[parseInt(results[i])].quality) + ` | float: ${data[parseInt(results[i])].float} | price: $${(data[parseInt(results[i])].total / 100).toFixed(2)}`)
+    console.log(colorize(data[parseInt(results[i])].name, data[parseInt(results[i])].quality) + ` | float: ${data[parseInt(results[i])].float.toFixed(18)} | price: $${(data[parseInt(results[i])].total / 100).toFixed(2)}`)
     total += data[parseInt(results[i])].float
   }
   const average = total / 10
-  console.log('Outcome Float: ' + chalk.bold(((answer[0].maxwear - answer[0].minwear)*average) + answer[0].minwear)) 
+  console.log('Outcome Float: ' + chalk.bold(((answer[0].maxwear - answer[0].minwear)*average) + answer[0].minwear))
+  if(await continuePrompt()) {
+    await automate(results, data)
+  }
+  else {
+    return
+  }
 }
 
 async function collectionSelection(itemsJson: any): Promise<any> {

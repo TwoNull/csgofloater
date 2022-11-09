@@ -1,14 +1,14 @@
-import CONFIG from "../../config";
 import InspectURL from "./lib/inspect_url";
 import Bot from "./lib/bot";
 import { colorize } from "../interface/interface";
 import fs from "fs";
+const CONFIG = JSON.parse(fs.readFileSync('./config.json', "utf-8"));
 
 export async function processFloats(data: any) {
   let bots: any;
   bots = [];
-  for (let i = 0; i < CONFIG.logins.length; i++) {
-    const loginData = CONFIG.logins[i];
+  for (let i = 0; i < CONFIG.bot_logins.length; i++) {
+    const loginData = CONFIG.bot_logins[i];
     if (!loginData) {
       throw "You Must Configure Bot Logins in 'config.ts'";
     }
@@ -60,10 +60,6 @@ async function getBot(bots: any): Promise<any> {
     return getBot(bots);
   }
   return bot;
-}
-
-function writeJsonFile(path: string, data: any) {
-  return fs.writeFileSync(path, JSON.stringify(data, null, 4), "utf-8");
 }
 
 function timeout(ms: number) {

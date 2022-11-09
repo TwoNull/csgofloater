@@ -1,4 +1,4 @@
-import { randomDesktop } from "./useragents";
+import { randomDesktop } from "../useragents";
 import axios from "axios";
 import { HttpsProxyAgent } from "hpagent";
 
@@ -45,9 +45,9 @@ async function scrapeMarketItem(hashName: string) {
   }
   let i: number;
   for (i = 100; i <= firstReq[1]; i += 100) {
-    firstReq[0].concat((await scrapeMarketPage(i, hashName))[0]);
+    firstReq[0] = firstReq[0].concat((await scrapeMarketPage(i, hashName))[0]);
   }
-  firstReq[0].concat((await scrapeMarketPage(i, hashName))[0]);
+  firstReq[0] = firstReq[0].concat((await scrapeMarketPage(i, hashName))[0]);
   return firstReq[0];
 }
 
@@ -66,9 +66,10 @@ export async function scrapeMarketPage(
         Referer: referer,
         "User-Agent": randomDesktop(),
         Accept: "*/*",
-        Connection: "keep-alive",
+        Connection: "keep-alive"
       },
       httpsAgent: new HttpsProxyAgent({
+        keepAlive: true,
         proxy: `http://mr10803lbO3:MHcryKGXAR_region-northamerica@ultra.marsproxies.com:44443`,
       }),
     });
@@ -90,7 +91,7 @@ export async function scrapeMarketPage(
       });
     }
     return [results, res.data.total_count];
-  } catch (err) {
+  } catch (err: any) {
     await timeout(1000);
     return scrapeMarketPage(start, hashName);
   }

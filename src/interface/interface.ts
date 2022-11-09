@@ -1,5 +1,5 @@
 //@ts-ignore
-import { Input, Select, MultiSelect, Form } from "enquirer";
+import { Input, Select } from "enquirer";
 import emoji from "node-emoji";
 import chalk from "chalk";
 
@@ -130,11 +130,45 @@ export async function floatPrompt(skin: any) {
   return parseFloat(answer);
 }
 
+export async function guardCodePrompt(type: any) {
+  const query = new Input({
+    message:
+      chalk.yellow(`Enter the 5 Digit Code from your ${type} `) + emoji.get('construction'),
+    initial: "XXXXX",
+    validate: function (answer: string) {
+      if(answer.length != 5) {
+        return 'The Steam Guard code must be 5 digits!'
+      }
+      return true;
+    },
+  });
+  const answer = await query.run();
+  return answer;
+}
+
+export async function continuePrompt() {
+  const query = new Select({
+    message: "Continue to Buy Screen?\n  ",
+    choices: [{message: chalk.green('Yes'), value: true}, {message: chalk.red('No'), value: false}],
+  });
+  const answer = await query.run();
+  return answer;
+}
+
+export async function buyPrompt(price: number, numSkins: number) {
+  const query = new Select({
+    message: "Buy " + chalk.bold(numSkins) + " Skins for " + chalk.bold(`$${price.toFixed(2)}`) + "?\n  ",
+    choices: [{message: chalk.green('Yes'), value: true}, {message: chalk.red('No'), value: false}],
+  });
+  const answer = await query.run();
+  return answer;
+}
+
 export function logo() {
   console.clear();
   console.log(
     chalk.gray(
-      "███████╗██╗░░░░░░█████╗░░█████╗░████████╗███████╗██████╗░\n" +
+        "███████╗██╗░░░░░░█████╗░░█████╗░████████╗███████╗██████╗░\n" +
         "██╔════╝██║░░░░░██╔══██╗██╔══██╗╚══██╔══╝██╔════╝██╔══██╗\n" +
         "█████╗░░██║░░░░░██║░░██║███████║░░░██║░░░█████╗░░██████╔╝\n" +
         "██╔══╝░░██║░░░░░██║░░██║██╔══██║░░░██║░░░██╔══╝░░██╔══██╗\n" +

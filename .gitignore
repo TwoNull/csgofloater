@@ -134,3 +134,4 @@ proxies.txt
 a.*
 config.js
 config.ts
+config.json
