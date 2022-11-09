@@ -88,6 +88,8 @@ export async function automate(results: any, data: any) {
     logo();
     console.log();
     console.log(chalk.yellow("Proceeding with Caution!"));
+    let failedCheckouts: any
+    failedCheckouts = []
     for (let i = 0; i < results.length; i++) {
       const purchasePayload = `sessionid=${sessionid}&currency=1&subtotal=${
         data[parseInt(results[i])].subtotal
@@ -114,33 +116,34 @@ export async function automate(results: any, data: any) {
       );
       if (!success) {
         console.log(
-          chalk.red("✖ ") +
+          chalk.red("✖ Failed to Buy") +
             colorize(
               data[parseInt(results[i])].name,
               data[parseInt(results[i])].quality
             ) +
-            ` | float: ${data[parseInt(results[i])].float.toFixed(
-              18
-            )} | price: $${(data[parseInt(results[i])].total / 100).toFixed(2)}`
+            ` for $${(data[parseInt(results[i])].total / 100).toFixed(2)}. ListingID ${data[parseInt(results[i])].listingid}`
         );
+        failedCheckouts.push(data[parseInt(results[i])].listingid)
       } else {
         console.log(
-          chalk.green("✓ ") +
+          chalk.green("✓ Bought ") +
             colorize(
               data[parseInt(results[i])].name,
               data[parseInt(results[i])].quality
-            ) +
-            ` | float: ${data[parseInt(results[i])].float.toFixed(
-              18
-            )} | price: $${(data[parseInt(results[i])].total / 100).toFixed(2)}`
+            ) + ` for $${(data[parseInt(results[i])].total / 100).toFixed(2)}`
         );
-        itemsToBuy.push(data[parseInt(results[i])]);
-        totalCost += data[parseInt(results[i])].total;
       }
-      await timeout(200);
+      await timeout(500);
     }
+    if(failedCheckouts.length > 0) {
+        console.log(chalk.yellow('Buy These ListingIDs Manually'))
+        for(let i = 0; i < failedCheckouts.length; i++) {
+            console.log(failedCheckouts[i])
+        }
+    }
+    return true;
   } else {
-    return;
+    return false;
   }
 }
 

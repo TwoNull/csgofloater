@@ -62,6 +62,7 @@ async function main() {
   );
   if ((await continuePrompt()) == "yes") {
     await automate(results, data);
+    return
   } else {
     return;
   }
