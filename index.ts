@@ -6,6 +6,7 @@ import {
   colorize,
   logo,
   floatPrompt,
+  maxPricePrompt,
 } from "./src/interface/interface";
 import { scrapeMarketItems } from "./src/scraper/marketplace";
 import { processFloats } from "./src/processor/processor";
@@ -23,6 +24,7 @@ async function main() {
   const answer = await collectionSelection(itemsJson);
   const desiredFloat = getIEEE754(await floatPrompt(answer[0]));
   logo();
+  const maxPrice = Math.floor((await maxPricePrompt()) * 100)
   console.log(
     `Closest Target Float for your ${colorize(
       answer[0].name,
@@ -35,9 +37,9 @@ async function main() {
   console.log();
   console.log("Average Float of Inputs: " + chalk.bold(afv));
   console.log("\n");
-  const scrape = await beginScrape(answer[0], answer[1]);
-  const data = await beginProcessing(scrape);
   while(true) {
+  const scrape = await beginScrape(answer[0], answer[1], maxPrice);
+  const data = await beginProcessing(scrape);
   const results = await beginModeling(data, afv);
   console.log();
   console.log("Input Skins:");
@@ -95,7 +97,7 @@ async function skinSelection(
   return [skin, collection];
 }
 
-async function beginScrape(skin: any, collection: any) {
+async function beginScrape(skin: any, collection: any, maxPrice: number) {
   let tradeQuality: number;
   if (skin.quality == 2) {
     tradeQuality = 1;
@@ -108,7 +110,7 @@ async function beginScrape(skin: any, collection: any) {
     format:
       "{filename} | " +
       colorize("{bar}", tradeQuality) +
-      "| {percentage}% || {value}/{total} Skins Scraped",
+      " | {percentage}% || {value}/{total} Skins Scraped",
     barCompleteChar: "\u2588",
     barIncompleteChar: "\u2591",
     hideCursor: true,
@@ -128,7 +130,8 @@ async function beginScrape(skin: any, collection: any) {
       await scrapeMarketItems(
         collection.skins[tradeQuality][item].name,
         collection.skins[tradeQuality][item].minwear,
-        collection.skins[tradeQuality][item].maxwear
+        collection.skins[tradeQuality][item].maxwear,
+        maxPrice
       ),
       tradeQuality,
     ]);

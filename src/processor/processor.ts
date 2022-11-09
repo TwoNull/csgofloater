@@ -24,6 +24,7 @@ export async function processFloats(data: any) {
       arrayOfItems.push(
         inspectItem(bots, data[i][1][j], data[i][0], data[i][2])
       );
+      await timeout(5)
     }
     const completed = await Promise.all(arrayOfItems);
     answer = answer.concat(completed);

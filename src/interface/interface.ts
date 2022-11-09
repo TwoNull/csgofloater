@@ -130,6 +130,24 @@ export async function floatPrompt(skin: any) {
   return parseFloat(answer);
 }
 
+export async function maxPricePrompt() {
+  logo();
+  const query = new Input({
+    message:
+      "Maximum Price to pay for inputs (USD):\n",
+    initial: "69.69",
+    validate: function (answer: string) {
+      const floatAnswer = parseFloat(answer);
+      if (isNaN(floatAnswer)) {
+        return "Must Be a Decimal Value";
+      }
+      return true;
+    },
+  });
+  const answer = await query.run();
+  return parseFloat(answer);
+}
+
 export async function guardCodePrompt(type: any) {
   const query = new Input({
     message:
