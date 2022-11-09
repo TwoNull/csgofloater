@@ -37,6 +37,7 @@ async function main() {
   console.log("\n");
   const scrape = await beginScrape(answer[0], answer[1]);
   const data = await beginProcessing(scrape);
+  while(true) {
   const results = await beginModeling(data, afv);
   console.log();
   console.log("Input Skins:");
@@ -61,10 +62,11 @@ async function main() {
       )
   );
   if ((await continuePrompt()) == "yes") {
-    await automate(results, data);
-    return
-  } else {
-    return;
+    const satisfied = await automate(results, data);
+    if(satisfied) {
+      return
+    }
+  }
   }
 }
 

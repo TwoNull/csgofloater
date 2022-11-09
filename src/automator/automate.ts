@@ -123,7 +123,7 @@ export async function automate(results: any, data: any) {
             ) +
             ` for $${(data[parseInt(results[i])].total / 100).toFixed(2)}. ListingID ${data[parseInt(results[i])].listingid}`
         );
-        failedCheckouts.push(data[parseInt(results[i])].listingid)
+        failedCheckouts.push([data[parseInt(results[i])].listingid, data[parseInt(results[i])].subtotal, data[parseInt(results[i])].fee, data[parseInt(results[i])].total])
       } else {
         console.log(
           chalk.green("✓ Bought ") +
@@ -138,7 +138,7 @@ export async function automate(results: any, data: any) {
     if(failedCheckouts.length > 0) {
         console.log(chalk.yellow('Buy These ListingIDs Manually'))
         for(let i = 0; i < failedCheckouts.length; i++) {
-            console.log(failedCheckouts[i])
+            console.log(failedCheckouts[i][0] + ' subtotal: ' + failedCheckouts[i][1] + ' fee: ' + failedCheckouts[i][2] + ' total: ' + failedCheckouts[i][3])
         }
     }
     return true;
