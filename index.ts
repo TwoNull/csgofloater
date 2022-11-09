@@ -22,7 +22,7 @@ async function main() {
   }
   const itemsJson = readJsonFile("./src/items/items.json");
   const answer = await collectionSelection(itemsJson);
-  const desiredFloat = getIEEE754(await floatPrompt(answer[0]));
+  let desiredFloat = getIEEE754(await floatPrompt(answer[0]));
   logo();
   const maxPrice = Math.floor((await maxPricePrompt()) * 100)
   console.log(
@@ -31,15 +31,15 @@ async function main() {
       answer[0].quality
     )}: ${chalk.bold(desiredFloat)}`
   );
-  const afv =
+  let afv =
     (desiredFloat - answer[0].minwear) /
     (answer[0].maxwear - answer[0].minwear);
   console.log();
   console.log("Average Float of Inputs: " + chalk.bold(afv));
   console.log("\n");
   const scrape = await beginScrape(answer[0], answer[1], maxPrice);
-  while(true) {
   const data = await beginProcessing(scrape);
+  while(true) {
   const results = await beginModeling(data, afv);
   console.log();
   console.log("Input Skins:");
@@ -69,7 +69,15 @@ async function main() {
       return
     }
   }
+  logo();
+  desiredFloat = getIEEE754(await floatPrompt(answer[0]));
+  afv =
+    (desiredFloat - answer[0].minwear) /
+    (answer[0].maxwear - answer[0].minwear);
   }
+  console.log();
+  console.log("Average Float of Inputs: " + chalk.bold(afv));
+  console.log("\n");
 }
 
 async function collectionSelection(itemsJson: any): Promise<any> {

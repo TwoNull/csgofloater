@@ -145,7 +145,7 @@ export async function automate(results: any, data: any, outcomeFloat: any) {
     }
     return true;
   } else {
-    return false;
+    return true;
   }
 }
 
