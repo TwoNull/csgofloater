@@ -5,7 +5,7 @@ import { HttpsProxyAgent } from "hpagent";
 export async function scrapeMarketItems(
   unhashedName: string,
   minFloat: number,
-  maxFloat: number,
+  maxFloat: number
 ) {
   let total: any;
   total = [];
@@ -66,7 +66,7 @@ export async function scrapeMarketPage(
         Referer: referer,
         "User-Agent": randomDesktop(),
         Accept: "*/*",
-        Connection: "keep-alive"
+        Connection: "keep-alive",
       },
       httpsAgent: new HttpsProxyAgent({
         keepAlive: true,

@@ -5,7 +5,7 @@ import {
   skinPrompt,
   colorize,
   logo,
-  floatPrompt
+  floatPrompt,
 } from "./src/interface/interface";
 import { scrapeMarketItems } from "./src/scraper/marketplace";
 import { processFloats } from "./src/processor/processor";
@@ -23,7 +23,12 @@ async function main() {
   const answer = await collectionSelection(itemsJson);
   const desiredFloat = getIEEE754(await floatPrompt(answer[0]));
   logo();
-  console.log(`Closest Target Float for your ${colorize(answer[0].name, answer[0].quality)}: ${chalk.bold(desiredFloat)}`)
+  console.log(
+    `Closest Target Float for your ${colorize(
+      answer[0].name,
+      answer[0].quality
+    )}: ${chalk.bold(desiredFloat)}`
+  );
   const afv =
     (desiredFloat - answer[0].minwear) /
     (answer[0].maxwear - answer[0].minwear);
@@ -32,21 +37,33 @@ async function main() {
   console.log("\n");
   const scrape = await beginScrape(answer[0], answer[1]);
   const data = await beginProcessing(scrape);
-  const results = await beginModeling(data, afv)
-  console.log()
-  console.log('Input Skins:')
+  const results = await beginModeling(data, afv);
+  console.log();
+  console.log("Input Skins:");
   let total = 0;
-  for(let i = 0; i < results.length; i++) {
-    console.log(colorize(data[parseInt(results[i])].name, data[parseInt(results[i])].quality) + ` | float: ${data[parseInt(results[i])].float.toFixed(18)} | price: $${(data[parseInt(results[i])].total / 100).toFixed(2)}`)
-    total += data[parseInt(results[i])].float
+  for (let i = 0; i < results.length; i++) {
+    console.log(
+      colorize(
+        data[parseInt(results[i])].name,
+        data[parseInt(results[i])].quality
+      ) +
+        ` | float: ${data[parseInt(results[i])].float.toFixed(18)} | price: $${(
+          data[parseInt(results[i])].total / 100
+        ).toFixed(2)}`
+    );
+    total += data[parseInt(results[i])].float;
   }
-  const average = total / 10
-  console.log('Outcome Float: ' + chalk.bold(((answer[0].maxwear - answer[0].minwear)*average) + answer[0].minwear))
-  if(await continuePrompt() == 'yes') {
-    await automate(results, data)
-  }
-  else {
-    return
+  const average = total / 10;
+  console.log(
+    "Outcome Float: " +
+      chalk.bold(
+        (answer[0].maxwear - answer[0].minwear) * average + answer[0].minwear
+      )
+  );
+  if ((await continuePrompt()) == "yes") {
+    await automate(results, data);
+  } else {
+    return;
   }
 }
 
@@ -97,13 +114,18 @@ async function beginScrape(skin: any, collection: any) {
     progressBar.start(1, 0, {
       speed: "N/A",
     });
-    progressBar.update({ filename: colorize(collection.skins[tradeQuality][item].name, tradeQuality) });
+    progressBar.update({
+      filename: colorize(
+        collection.skins[tradeQuality][item].name,
+        tradeQuality
+      ),
+    });
     data.push([
       collection.skins[tradeQuality][item].name,
       await scrapeMarketItems(
         collection.skins[tradeQuality][item].name,
         collection.skins[tradeQuality][item].minwear,
-        collection.skins[tradeQuality][item].maxwear,
+        collection.skins[tradeQuality][item].maxwear
       ),
       tradeQuality,
     ]);
@@ -119,13 +141,13 @@ async function beginProcessing(data: any) {
 }
 
 async function beginModeling(data: any, avg: number) {
-  let s = ''
-  for(let i = 0; i < data.length; i++) {
-    s += `${data[i].float} `
+  let s = "";
+  for (let i = 0; i < data.length; i++) {
+    s += `${data[i].float} `;
   }
-  fs.writeFileSync('./data/floats.txt', s, "utf-8")
-  const res = await runModeler(avg)
-  return res
+  fs.writeFileSync("./data/floats.txt", s, "utf-8");
+  const res = await runModeler(avg);
+  return res;
 }
 
 function readJsonFile(path: string) {
