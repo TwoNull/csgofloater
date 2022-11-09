@@ -42,7 +42,7 @@ async function main() {
   }
   const average = total / 10
   console.log('Outcome Float: ' + chalk.bold(((answer[0].maxwear - answer[0].minwear)*average) + answer[0].minwear))
-  if(await continuePrompt()) {
+  if(await continuePrompt() == 'yes') {
     await automate(results, data)
   }
   else {

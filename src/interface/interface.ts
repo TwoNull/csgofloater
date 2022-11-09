@@ -149,7 +149,7 @@ export async function guardCodePrompt(type: any) {
 export async function continuePrompt() {
   const query = new Select({
     message: "Continue to Buy Screen?\n  ",
-    choices: [{message: chalk.green('Yes'), value: true}, {message: chalk.red('No'), value: false}],
+    choices: [{message: chalk.green('Yes'), value: 'yes'}, {message: chalk.red('No'), value: 'no'}],
   });
   const answer = await query.run();
   return answer;
@@ -158,7 +158,7 @@ export async function continuePrompt() {
 export async function buyPrompt(price: number, numSkins: number) {
   const query = new Select({
     message: "Buy " + chalk.bold(numSkins) + " Skins for " + chalk.bold(`$${price.toFixed(2)}`) + "?\n  ",
-    choices: [{message: chalk.green('Yes'), value: true}, {message: chalk.red('No'), value: false}],
+    choices: [{message: chalk.green('Yes'), value: 'yes'}, {message: chalk.red('No'), value: 'no'}],
   });
   const answer = await query.run();
   return answer;

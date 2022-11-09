@@ -36,11 +36,53 @@ export async function automate(results: any, data: any) {
     }
     const dollars = (totalCost / 100)
     const proceed = await buyPrompt(dollars, itemsToBuy.length)
-    if(proceed) {
-        console.log('Proceeding with Caution')
+    if(proceed == 'yes') {
+        logo()
+        console.log()
+        console.log(chalk.yellow('Proceeding with Caution!'))
+        for(let i = 0; i < results.length; i++) {
+            const purchasePayload = `sessionid=${sessionid}&currency=1&subtotal=${data[parseInt(results[i])].subtotal}&fee=${data[parseInt(results[i])].fee}&total=${data[parseInt(results[i])].total}&quantity=1&first_name=${CONFIG.billing.first_name}&last_name=${CONFIG.billing.last_name}&billing_address=${steamifyString(CONFIG.billing.billing_address_1)}&billing_address_two=${steamifyString(CONFIG.billing.billing_address_1)}&billing_country=${CONFIG.billing.billing_country}&billing_city=${steamifyString(CONFIG.billing.billing_city)}&billing_state=${CONFIG.billing.billing_state}&billing_postal_code=${CONFIG.billing.billing_postal_code}&save_my_address=1`
+            const success = await checkout(sessionid, steamloginsecure, data[parseInt(results[i])].listingid, purchasePayload)
+            if(!success) {
+                console.log(chalk.red('✖ ') + colorize(data[parseInt(results[i])].name, data[parseInt(results[i])].quality) + ` | float: ${data[parseInt(results[i])].float.toFixed(18)} | price: $${(data[parseInt(results[i])].total / 100).toFixed(2)}`)
+            }
+            else {
+                console.log(chalk.green('✓ ') + colorize(data[parseInt(results[i])].name, data[parseInt(results[i])].quality) + ` | float: ${data[parseInt(results[i])].float.toFixed(18)} | price: $${(data[parseInt(results[i])].total / 100).toFixed(2)}`)
+                itemsToBuy.push(data[parseInt(results[i])])
+                totalCost += (data[parseInt(results[i])].total)
+            }
+            await timeout(200)
+        }
     }
     else {
         return;
+    }
+}
+
+async function checkout(sessionid: string, steamloginsecure: string, listingid: string, data: string) {
+    try {
+        const url = `https://steamcommunity.com/market/buylisting/${listingid}`;
+        const res = await axios.post(url, data, {
+          headers: {
+            Host: "steamcommunity.com",
+            Origin: "https://steamcommunity.com/",
+            Referer: `https://steamcommunity.com/market/listings/730/`,
+            "User-Agent": randomDesktop(),
+            Accept: "*/*",
+            Connection: "keep-alive",
+            Cookie: `sessionid=${sessionid}; ${steamloginsecure}`
+          },
+        });
+        if(res.data.wallet_info.success == 1) {
+            return true
+        }
+        return false
+    } catch (err: any) {
+        if(err.response && err.response.data) {
+            return false
+        }
+        await timeout(1000);
+        return checkStock(sessionid, steamloginsecure, listingid, data);
     }
 }
 
