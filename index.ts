@@ -37,8 +37,8 @@ async function main() {
   console.log();
   console.log("Average Float of Inputs: " + chalk.bold(afv));
   console.log("\n");
-  while(true) {
   const scrape = await beginScrape(answer[0], answer[1], maxPrice);
+  while(true) {
   const data = await beginProcessing(scrape);
   const results = await beginModeling(data, afv);
   console.log();
