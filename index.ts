@@ -64,7 +64,7 @@ async function main() {
       )
   );
   if ((await continuePrompt()) == "yes") {
-    const satisfied = await automate(results, data);
+    const satisfied = await automate(results, data, (answer[0].maxwear - answer[0].minwear) * average + answer[0].minwear);
     if(satisfied) {
       return
     }

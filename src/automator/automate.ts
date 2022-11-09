@@ -18,7 +18,7 @@ import {
 } from "../interface/interface";
 const CONFIG = JSON.parse(fs.readFileSync("./config.json", "utf-8"));
 
-export async function automate(results: any, data: any) {
+export async function automate(results: any, data: any, outcomeFloat: any) {
   const cookies: any = await getCookies();
   const sessionid = cookies[0];
   const steamloginsecure = cookies[1][cookies[1].length - 1];
@@ -82,6 +82,8 @@ export async function automate(results: any, data: any) {
         " Items Have Sold Since Calculating the Output!"
     );
   }
+  console.log('Outcome Float: ' + outcomeFloat)
+  console.log()
   const dollars = totalCost / 100;
   const proceed = await buyPrompt(dollars, itemsToBuy.length);
   if (proceed == "yes") {
