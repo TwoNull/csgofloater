@@ -49,6 +49,10 @@ run the csgofloater interface:
 npm start
 ```
 
+## Acknowledgements
+
+Special thanks to [m4rquee](https://github.com/m4rquee), who contributed most of the logic for calculating inputs and [CSGOFloat](https://github.com/csgofloat) for their logic to inspect weapon skins using an array of bots.
+
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
