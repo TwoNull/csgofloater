@@ -25,7 +25,7 @@ cd csgofloater
 npm install
 ```
 
-edit the `.env` file with the directories from your Gurobi installation. The default values are from a MacOS environment running Gurobi 9.5.2.
+copy `.example.env` to `.env` and edit it with the directories from your Gurobi installation. The default values are from a MacOS environment running Gurobi 9.5.2.
 
 > `GUROBI_INCLUDE_DIR` is the directory containing `gurobi_c.h` and `gurobi_c++.h`
 > 
