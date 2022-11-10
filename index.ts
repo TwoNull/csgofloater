@@ -39,6 +39,7 @@ async function main() {
   console.log("\n");
   const scrape = await beginScrape(answer[0], answer[1], maxPrice);
   const data = await beginProcessing(scrape);
+  logo()
   while(true) {
   const results = await beginModeling(data, afv);
   console.log();
