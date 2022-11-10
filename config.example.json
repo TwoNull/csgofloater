@@ -1,0 +1,39 @@
+{
+  "bot_logins": [
+    {
+      "user": "username",
+      "pass": "password",
+      "auth": "12345"
+    },
+    {
+      "user": "username",
+      "pass": "password",
+      "auth": "12345"
+    },
+    {
+      "user": "username",
+      "pass": "password",
+      "auth": "12345"
+    }
+  ],
+  "bot_settings": {
+    "max_attempts": 1,
+    "request_delay": 1100,
+    "request_ttl": 2000,
+    "steam_user": {}
+  },
+  "user_login": {
+    "user": "My Steam Login",
+    "pass": "My Password"
+  },
+  "billing": {
+    "first_name": "John",
+    "last_name": "Doe",
+    "billing_address_1": "123 Anyplace St.",
+    "billing_address_2": "Apt 4",
+    "billing_country": "US",
+    "billing_city": "Chicago",
+    "billing_state": "Illinois",
+    "billing_postal_code": "60603"
+  }
+}
